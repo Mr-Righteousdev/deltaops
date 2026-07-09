@@ -90,6 +90,10 @@
 
         {{ $slot }}
 
+        @livewire('notifications') {{-- Only required if you wish to send flash notifications --}}
+        
+        @filamentScripts
+
         @persist('toast')
             <flux:toast.group>
                 <flux:toast />

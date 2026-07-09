@@ -10,6 +10,12 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 @fonts
+<style>
+    [x-cloak] {
+        display: none !important;
+    }
+</style>
 
+@filamentStyles
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
