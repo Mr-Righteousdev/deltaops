@@ -7,6 +7,7 @@ use App\Models\CookieFile;
 use App\Models\Download;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Rule;
@@ -63,7 +64,7 @@ class DownloadForm extends Component
 
             $activeCookie = CookieFile::where('is_active', true)->latest('uploaded_at')->first();
             $cookiesPath = $activeCookie?->file_path
-                ? storage_path('app/'.$activeCookie->file_path)
+                ? Storage::disk('local')->path($activeCookie->file_path)
                 : config('downloader.cookies_path');
             if ($cookiesPath && file_exists($cookiesPath)) {
                 $command[] = '--cookies';

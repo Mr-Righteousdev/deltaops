@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -50,7 +51,7 @@ class ProcessDownload implements ShouldBeUnique, ShouldQueue
 
         $activeCookie = CookieFile::where('is_active', true)->latest('uploaded_at')->first();
         $cookiesPath = $activeCookie?->file_path
-            ? storage_path('app/'.$activeCookie->file_path)
+            ? Storage::disk('local')->path($activeCookie->file_path)
             : config('downloader.cookies_path');
         if ($cookiesPath && file_exists($cookiesPath)) {
             array_push($command, '--cookies', $cookiesPath);
