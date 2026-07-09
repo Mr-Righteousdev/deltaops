@@ -39,6 +39,7 @@ class ProcessDownload implements ShouldBeUnique, ShouldQueue
             config('downloader.yt_dlp_path'),
             '--no-playlist',
             '--print', 'after_move:filepath',
+            '--js-runtimes', 'deno',
             '-o', $outputTemplate,
             '-f', $this->buildFormatArgument(),
         ];

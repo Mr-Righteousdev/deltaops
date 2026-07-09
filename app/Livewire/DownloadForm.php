@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Jobs\ProcessDownload;
+use App\Models\CookieFile;
 use App\Models\Download;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
@@ -53,12 +54,25 @@ class DownloadForm extends Component
 
         $cacheKey = 'yt_info_'.md5($this->url);
         $info = Cache::remember($cacheKey, 3600, function (): array {
-            $process = new Process([
+            $command = [
                 config('downloader.yt_dlp_path'),
                 '--dump-json',
                 '--no-playlist',
-                $this->url,
-            ]);
+                '--js-runtimes', 'deno',
+            ];
+
+            $activeCookie = CookieFile::where('is_active', true)->latest('uploaded_at')->first();
+            $cookiesPath = $activeCookie?->file_path
+                ? storage_path('app/'.$activeCookie->file_path)
+                : config('downloader.cookies_path');
+            if ($cookiesPath && file_exists($cookiesPath)) {
+                $command[] = '--cookies';
+                $command[] = $cookiesPath;
+            }
+
+            $command[] = $this->url;
+
+            $process = new Process($command);
             $process->setTimeout(30);
             $process->run();
 
